@@ -218,6 +218,7 @@ python dataset_creation/vilma_print_hdf5_contents.py --h5 vilma_dataset.h5
 
 The repository includes:
 
+- Hardware guide
 - Full CAD models (STEP, STL, and editable source references)
 - Bill of Materials (BOM)
 - 3D printing guidelines 
