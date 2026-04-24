@@ -100,7 +100,7 @@ Setup and connect cameras:
       
 3. Connect GoPro HERO9 to a mobile phone:
    - Turn on the phone's Bluetooth and Wi-Fi, open GoPro Quik, and select GoPro tab.
-   - Turn on the camera and select **Pair Device** to connect.
+   - Turn on the camera and select **Connections > Connect Device > Quick App** to connect.
 
 #### 2.2.3 Audio recording
 Set up RODE microphone:
