@@ -630,16 +630,15 @@ def main() -> int:
         for session in sessions:
             instruction_text = session.get("instruction", {}).get("text_instruction", "")
             task_key = normalize_instruction(instruction_text)
-            if task_key not in instruction_lookup:
-                skipped += len(session.get("variants", []))
-                skipped_instructions.append(instruction_text)
-                continue
-
-            task_id, variant_h5_id = instruction_lookup[task_key]
             for variant in session.get("variants", []):
                 if variant.get("task_failure") is True:
                     skipped_task_failure += 1
                     continue
+                if task_key not in instruction_lookup:
+                    skipped += 1
+                    skipped_instructions.append(instruction_text)
+                    continue
+                task_id, variant_h5_id = instruction_lookup[task_key]
                 add_variant_to_hdf5(
                     h5f,
                     variant,
