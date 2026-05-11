@@ -141,7 +141,10 @@ def organize_one_path(
             shutil.move(str(src), str(dst))
     else:
         if src.resolve() != dst.resolve():
-            shutil.copy2(src, dst)
+            if dst.exists():
+                print(f"Destination file already exists, skipping copy: {dst}")
+            else:
+                shutil.copy2(src, dst)
 
     h5_path = f"{h5_relative_prefix.rstrip('/')}/{src.name}"
     write_string_dataset(sensor_group, dataset_name, h5_path)
