@@ -134,12 +134,6 @@ def main():
         help='JSON file(s) to process (e.g., sessions.json sessions_.json)'
     )
     parser.add_argument(
-        '--sort',
-        choices=['name', 'duration'],
-        default='name',
-        help='Sort results by task name or duration (default: name)'
-    )
-    parser.add_argument(
         '--tasks-info-output',
         default='vilma_tasks_info.json',
         help='Output JSON file for tasks_info mapping (default: vilma_tasks_info.json)'
@@ -154,11 +148,10 @@ def main():
         print("No data found in provided files.")
         return
     
-    # Sort results
-    if args.sort == 'duration':
-        sorted_tasks = sorted(task_stats.items(), key=lambda x: x[1]['duration'], reverse=True)
-    else:
-        sorted_tasks = sorted(task_stats.items())
+    # Sort tasks by total duration (descending); printed tables use the same ordering.
+    sorted_tasks = sorted(
+        task_stats.items(), key=lambda x: x[1]['duration'], reverse=True
+    )
     
     # Final task categories (explicit labels + keyword matching)
     categories = [
@@ -214,15 +207,12 @@ def main():
                 cat["tasks"].append((task, count, duration, uni_r, uni_l, bi))
                 break
 
-    # Sort category rows and subtask rows according to --sort mode.
-    if args.sort == 'duration':
-        categories = sorted(categories, key=lambda c: (c["duration"], c["count"]), reverse=True)
-        for cat in categories:
-            cat["tasks"] = sorted(cat["tasks"], key=lambda t: (t[2], t[1]), reverse=True)
-    else:
-        categories = sorted(categories, key=lambda c: c["label"].lower())
-        for cat in categories:
-            cat["tasks"] = sorted(cat["tasks"], key=lambda t: t[0].lower())
+    # Sort category rows and subtasks by duration (descending).
+    categories = sorted(
+        categories, key=lambda c: (c["duration"], c["count"]), reverse=True
+    )
+    for cat in categories:
+        cat["tasks"] = sorted(cat["tasks"], key=lambda t: (t[2], t[1]), reverse=True)
 
     # ANSI colors for terminal output (ignored if your terminal doesn't support them)
     ANSI_RESET = "\033[0m"
@@ -301,7 +291,10 @@ def main():
     print(f"{'Location':<{task_width}}{'Uni-R':>8}{'Uni-L':>8}{'Bi':>8}{'Count':>10} {'Duration (s)':>14}")
     print("=" * line_width)
     for idx, (location, stats) in enumerate(
-        sorted(tasks_per_location.items(), key=lambda x: (-x[1]['count'], x[0]))
+        sorted(
+            tasks_per_location.items(),
+            key=lambda x: (-x[1]['duration'], x[0].lower()),
+        )
     ):
         row_color = ANSI_CATEGORY_COLORS[idx % len(ANSI_CATEGORY_COLORS)]
         print_metric_row(
@@ -318,7 +311,10 @@ def main():
     print(f"{'Participant':<{task_width}}{'Uni-R':>8}{'Uni-L':>8}{'Bi':>8}{'Count':>10} {'Duration (s)':>14}")
     print("=" * line_width)
     for idx, (user_id, stats) in enumerate(
-        sorted(tasks_per_user.items(), key=lambda x: (-x[1]['count'], x[0]))
+        sorted(
+            tasks_per_user.items(),
+            key=lambda x: (-x[1]['duration'], x[0].lower()),
+        )
     ):
         row_color = ANSI_CATEGORY_COLORS[idx % len(ANSI_CATEGORY_COLORS)]
         print_metric_row(

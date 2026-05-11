@@ -211,7 +211,7 @@ python data_processing/vilma_compress_videos.py --input-dir recordings
 Generate task, participants, and locations statistics, and export `tasks_info` from the json file:
 
 ```bash
-python dataset_creation/vilma_calculate_statistics.py sessions.json --sort duration --tasks-info-output vilma_tasks_info.json
+python dataset_creation/vilma_calculate_statistics.py sessions.json --tasks-info-output vilma_tasks_info.json
 ```
 
 ### 5.2 Create the dataset
