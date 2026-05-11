@@ -1,21 +1,45 @@
 # VILMA
 
-## 1. Installation
+This repository contains the codebase for the VILMA (VIsion Language MAnipulation) project, created by the CAIR (Cognitive Artificial Intelligence and Robotics) research group at the CYENS Centre of Excellence. This work was supported by the euROBIN project under the 3rd Open Call for Technology Exchange Programme (Project: "VILMA - Advancing Robotic Manipulation: A Handheld Gripper and Vision-Language Dataset"). 
 
-### 1.1. Clone the repository
+The repository provides the hardware documentation and software framework for multimodal manipulation data collection using a head-mounted camera, a microphone, and two handheld grippers equipped with cameras and motion tracking systems. It includes tools for sensor synchronization, data acquisition, processing pipelines, and dataset generation.
+
+The VILMA Dataset can be downloaded from our EuroCore Zenodo repository here: https://doi.org/10.5281/zenodo.19708163
+
+
+## 1. Hardware
+
+Full hardware documentation is available in the `hardware/` folder, that includes:
+
+- Hardware guide
+- Full CAD models (STEP, STL, and editable source references)
+- Bill of Materials (BOM)
+- 3D printing guidelines 
+- Assembly instructions with deployment setup guidance
+- Interchangeable hard and soft finger configurations
+- Integrated HTC VIVE tracker mounting for motion tracking
+- GoPro mounting support for egocentric recording
+- AprilTags
+
+The design preserves the original UMI pistol-style interaction while introducing project-specific modifications for improved tracking integration, deployment readiness, and real-world data collection reliability.
+
+
+## 2. Software setup
+
+### 2.1. Clone the repository
 
 ```bash
 git clone https://github.com/ctheoc/VILMA.git
 cd VILMA
 ```
 
-### 1.2. Create a virtual environment
+### 2.2. Create a virtual environment
 
 ```bash
 python -m venv venv
 ```
 
-### 1.3. Activate the virtual environment
+### 2.3. Activate the virtual environment
 
 **Linux / macOS**
 
@@ -29,9 +53,9 @@ source venv/bin/activate
 venv\Scripts\activate
 ```
 
-### 1.4. Install dependencies
+### 2.4. Install dependencies
 
-#### 1.4.1 ffmpeg
+#### 2.4.1 ffmpeg
 
 To check if it's installed, run: 
 ```bash
@@ -51,17 +75,17 @@ sudo apt updatesudo apt install ffmpeg
 brew install ffmpeg 
 ```
 
-#### 1.4.2 Python libraries
+#### 2.4.2 Python libraries
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## 2. Data Collection
+## 3. Data Collection
 
 Data are collected using VIVE trackers, GoPro cameras, and microphone.
 
-### 2.1. Finger distance calibration
+### 3.1. Finger distance calibration
 
 To account for the severe distortion of the GoPro Hero 13 Black’s 'Ultra Wide HyperView' lens, perform a custom finger distance calibration. Map physical measurements to the pixel distances between the centers of the AprilTags on each finger. 
 
@@ -69,9 +93,9 @@ To account for the severe distortion of the GoPro Hero 13 Black’s 'Ultra Wide 
 python data_collection/vilma_fingers_distance_calibration.py
 ```
 
-### 2.2. Data Collection setup
+### 3.2. Data Collection setup
 
-#### 2.2.1 Tracking
+#### 3.2.1 Tracking
 VIVE trackers and base stations should be connected via SteamVR.
 Prerequisites: Download and install SteamVR.
 Connect base stations and trackers:
@@ -86,7 +110,7 @@ Connect base stations and trackers:
    - Wait for the status light to turn green. This means pairing is successful.
    - In the Controller Pairing window, click **Done**.
 
-#### 2.2.2 Video recording
+#### 3.2.2 Video recording
 We use two GoPro HERO13 cameras, each one mounted on each handheld gripper, and a head-mounted GoPro HERO9 camera. HERO13 cameras can be manipulated via this script, while HERO9 is manipulated manually, or via a mobile phone.
 Prerequisites: Download GoPro Quik app on the mobile phone.
 Setup and connect cameras:
@@ -102,16 +126,16 @@ Setup and connect cameras:
    - Turn on the phone's Bluetooth and Wi-Fi, open GoPro Quik, and select GoPro tab.
    - Turn on the camera and select **Connections > Connect Device > Quick App** to connect.
 
-#### 2.2.3 Audio recording
+#### 3.2.3 Audio recording
 Set up RODE microphone:
 1. Connect RX (Receiver) to the PC via USB.
 2. Connect TX (Transmitter) to the RX.
 3. Select **Wireless GO GX** as the input device in the PC settings.
 
-#### 2.2.4 Check PC audio
+#### 3.2.4 Check PC audio
 Ensure the PC volume is **not muted** so you can hear the 'beep' sound when a recording starts. This sound will be later used to synchronize tracking and video recordings.
 
-### 2.3. Run the data collection script
+### 3.3. Run the data collection script
 
 ```bash
 python data_collection/vilma_collect_data.py
@@ -121,13 +145,13 @@ This script creates in the repository root:
  - a folder with the recorded data named **recordings**, and 
  - a JSON file named **sessions.json** that includes the paths to the data files.
 
-For tracking we are using:
-https://github.com/TriadSemi/triad_openvr
-commit: d389aacf2a4caa392398613a9daddba15ee24f92
+For tracking we use 
+https://github.com/TriadSemi/triad_openvr 
+at commit d389aacf2a4caa392398613a9daddba15ee24f92.
 
-## 3. Data Processing
+## 4. Data Processing
 
-### 3.1. Data Processing setup
+### 4.1. Data Processing setup
 
 Make sure that videos exists in the **recordings** folder.
  - Videos captured by the camera mounted on the left gripper under **recordings/left**
@@ -147,7 +171,7 @@ Create a `.env` file in the repository root with your OpenAI API key:
 echo 'openai_api_key=YOUR_OPENAI_API_KEY' > .env
 ```
 
-### 3.2. Run the data processing script
+### 4.2. Run the data processing script
 
 The script prepares data before saving into the final dataset:
 - Transcribes the recorded instruction (speech-to-text) using OpenAI
@@ -159,7 +183,7 @@ The script prepares data before saving into the final dataset:
 python data_processing/vilma_process_data.py --json sessions.json --recordings recordings
 ```
 
-### 3.3. Extract depth maps
+### 4.3. Extract depth maps
 
 To extract depth maps from the videos using Depth-Anything-V2, run:
 
@@ -167,11 +191,12 @@ To extract depth maps from the videos using Depth-Anything-V2, run:
 python data_processing/Depth-Anything-V2/run_video.py --encoder vits --sessions-path sessions.json --pred-only --grayscale
 ```
 
-For depth depth extraction we are using:
-https://github.com/DepthAnything/Depth-Anything-V2
-commit: a561b849ebae10a6f5ef49e26c83cbbcd36c71bf
+For depth extraction, we use 
+https://github.com/DepthAnything/Depth-Anything-V2 
+at commit a561b849ebae10a6f5ef49e26c83cbbcd36c71bf. 
+We modified run_video.py for VILMA's purposes.
 
-### 3.4. Video compression
+### 4.4. Video compression
 
 To convert videos (including depth maps) to 720p at 30FPS, run:
 
@@ -179,9 +204,9 @@ To convert videos (including depth maps) to 720p at 30FPS, run:
 python data_processing/vilma_compress_videos.py --input-dir recordings
 ```
 
-## 4. Dataset creation
+## 5. Dataset creation
 
-### 4.1. Calculate statistics
+### 5.1. Calculate statistics
 
 Generate task, participants, and locations statistics, and export `tasks_info` from the json file:
 
@@ -189,7 +214,7 @@ Generate task, participants, and locations statistics, and export `tasks_info` f
 python dataset_creation/vilma_calculate_statistics.py sessions.json --sort duration --tasks-info-output vilma_tasks_info.json
 ```
 
-### 4.2 Create the dataset
+### 5.2 Create the dataset
 
 Create/append the HDF5 structure from the json file:
 
@@ -203,33 +228,17 @@ Organize video files according to the HDF5 hierarchy:
 python dataset_creation/vilma_organize_videos_by_hdf5.py --h5 vilma_dataset.h5 --recordings-root recordings --output-root /path/to/dataset_root
 ```
 
-The VILMA Dataset can be downloaded from our EuroCore Zenodo repository here: https://doi.org/10.5281/zenodo.19708163
+In case you want to blur faces that may appear in the recorded videos, run the following command, which uses *insightface*:
 
-### 4.3 Navigate the dataset
+```bash
+python dataset_creation/vilma_blur_faces.py
+```
+
+### 5.3 Navigate the dataset
 
 Print HDF5 contents (for array datasets, prints only shape and first element or line):
 
 ```bash
 python dataset_creation/vilma_print_hdf5_contents.py --h5 vilma_dataset.h5
 ```
-
-
-## 5. Hardware
-
-The repository includes:
-
-- Hardware guide
-- Full CAD models (STEP, STL, and editable source references)
-- Bill of Materials (BOM)
-- 3D printing guidelines 
-- Assembly instructions with deployment setup guidance
-- Interchangeable hard and soft finger configurations
-- Integrated HTC VIVE tracker mounting for motion tracking
-- GoPro mounting support for egocentric recording
-- AprilTags
-
-The design preserves the original UMI pistol-style interaction while introducing project-specific modifications for improved tracking integration, deployment readiness, and real-world data collection reliability.
-
-📁 Full hardware documentation is available in the `hardware/` folder.
-
 
