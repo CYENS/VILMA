@@ -172,7 +172,7 @@ def main():
         {"label": "Open washing machine, place clothes, and close.", "keyword": "washing machine", "count": 0, "duration": 0.0, "unimanual_right": 0, "unimanual_left": 0, "bimanual": 0, "tasks": []},
         {"label": "Throw trash in the bin.", "keyword": "trash", "count": 0, "duration": 0.0, "unimanual_right": 0, "unimanual_left": 0, "bimanual": 0, "tasks": []},
         {"label": "Open fridge, place item, and close the fridge.", "keyword": "fridge", "count": 0, "duration": 0.0, "unimanual_right": 0, "unimanual_left": 0, "bimanual": 0, "tasks": []},
-        {"label": "Open dishwasher, place or take out item, and close.", "keyword": "dishwasher", "count": 0, "duration": 0.0, "unimanual_right": 0, "unimanual_left": 0, "bimanual": 0, "tasks": []},
+        {"label": "Open the dishwasher, place item, and close it.", "keyword": "dishwasher", "count": 0, "duration": 0.0, "unimanual_right": 0, "unimanual_left": 0, "bimanual": 0, "tasks": []},
     ]
     category_task_ids = {cat["label"]: f"C{i+1}" for i, cat in enumerate(categories)}
 
